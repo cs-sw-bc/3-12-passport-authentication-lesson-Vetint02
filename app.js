@@ -1,13 +1,24 @@
 import notesRoute from "./routes/notes.js"
 import path from "path";
 import { fileURLToPath } from "url";
+import express from "express";
+import session from "express-session";
+import connectDB from "./db.js"
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 
+// Connect to DB
+connectDB();
+
 //add session
+app.use(session({
+  secret: "Keyboard cat",
+  resave: false,
+  saveUninitialized: false
+}));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -45,7 +56,7 @@ app.use("/crash",(req,res,next)=>{
     error.status =401;
     next(error);
 })
-app.use("/notes",ensureAuthenticated, notesRoute);
+app.use("/notes", notesRoute);
 
 //4. Route not found middleware function
 app.use((a,b,c) =>{
