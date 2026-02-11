@@ -15,7 +15,7 @@ passport.use(new Strategy(
     // Check if the given password = database password
     if (user_test.password == password)
     {
-        return done(null, user); // authentication success
+        return done(null, user_test); // authentication success
     }
     else
     {

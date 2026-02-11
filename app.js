@@ -11,6 +11,13 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
+app.use((req, res, next) => {
+    console.log("--- NETWORK EVENT ---");
+    console.log("Method:", req.method);
+    console.log("URL:", req.url);
+    next();
+});
+
 // Connect to DB
 connectDB();
 
@@ -28,6 +35,7 @@ app.use(express.json());
 app.use(passport.initialize());
 app.use(passport.session());
 
+
 //Create POST login
 // If user calls /login, take them to passport local authentication
 // If success go to dashboard. If failure, go to crash page.
@@ -40,7 +48,6 @@ app.post("/login", passport.authenticate(`local`, { failureRedirect: `/crash`, s
 app.get("/login", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "login.html"));
 });
-
 
 //Protecting routes
 app.get("/dashboard", (req, res) => {
