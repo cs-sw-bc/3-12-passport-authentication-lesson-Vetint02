@@ -61,7 +61,8 @@ app.use("/crash",(req,res,next)=>{
     const error = new Error("Authenticated failed");
     error.status =401;
     next(error);
-})
+});
+
 app.use("/notes", notesRoute);
 
 //4. Route not found middleware function

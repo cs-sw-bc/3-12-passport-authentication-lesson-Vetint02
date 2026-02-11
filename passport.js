@@ -5,7 +5,7 @@ import user from "./models/user.js";
 passport.use(new Strategy(
   async function(username, password, done) {
     const user_test = await user.findOne({username: username}); // fetch the user from db if user exists
-    
+    console.log(user_test);
     // Check if user exists
     if (!user_test)
     {
