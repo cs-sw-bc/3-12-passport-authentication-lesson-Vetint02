@@ -11,13 +11,6 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-app.use((req, res, next) => {
-    console.log("--- NETWORK EVENT ---");
-    console.log("Method:", req.method);
-    console.log("URL:", req.url);
-    next();
-});
-
 // Connect to DB
 connectDB();
 
@@ -41,7 +34,23 @@ app.use(passport.session());
 // If success go to dashboard. If failure, go to crash page.
 app.post("/login", passport.authenticate(`local`, { failureRedirect: `/crash`, successRedirect: `/dashboard`}));
 
+function ensureAuthentication(req, res, next){
+  if (req.isAuthenticated()){
+    return next();
+  }
+  else{
+    res.redirect('/login');
+  }
+}
 //Create logout
+app.get("/logout", function(req, res, next){
+  req.logout(function(err){
+    if (err) {
+      return next(err);
+    }
+    res.redirect(`/login`);
+  });
+})
 
 //Create a function to authenticate if a user logged in
 
@@ -50,11 +59,11 @@ app.get("/login", (req, res) => {
 });
 
 //Protecting routes
-app.get("/dashboard", (req, res) => {
+app.get("/dashboard", ensureAuthentication, (req, res) => {
   res.sendFile(path.join(__dirname, "views", "dashboard.html"));
 });
 
-app.get("/show-notes", (req, res) => {
+app.get("/show-notes", ensureAuthentication, (req, res) => {
   res.sendFile(path.join(__dirname, "views", "show-notes.html"));
 });
 
@@ -70,7 +79,7 @@ app.use("/crash",(req,res,next)=>{
     next(error);
 });
 
-app.use("/notes", notesRoute);
+app.use("/notes", ensureAuthentication, notesRoute);
 
 //4. Route not found middleware function
 app.use((a,b,c) =>{
