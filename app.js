@@ -4,6 +4,7 @@ import { fileURLToPath } from "url";
 import express from "express";
 import session from "express-session";
 import connectDB from "./db.js"
+import passport from "./passport.js"
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -24,8 +25,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // initialize passport
+app.use(passport.initialize());
+app.use(passport.session());
 
 //Create POST login
+// If user calls /login, take them to passport local authentication
+// If success go to dashboard. If failure, go to crash page.
+app.post("/login", passport.authenticate(`local`, { failureRedirect: `/crash`, successRedirect: `/dashboard`}));
 
 //Create logout
 
